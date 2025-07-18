@@ -9,8 +9,8 @@ const PORT = process.env.PORT || 8081;
 // 創建 Express 應用
 const app = express();
 
-// 提供靜態檔案 (將 public 資料夾設為根目錄)
-app.use(express.static(path.join(__dirname, "public")));
+// 提供靜態檔案 (將 public 資料夾設為根目錄)//改這個
+app.use(express.static(path.join(__dirname, "WaterScapesWeb")));
 
 // 創建 HTTP 伺服器，並將 Express 設置為 handler
 const server = http.createServer(app);
