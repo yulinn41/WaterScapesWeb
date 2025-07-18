@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <title>水燈互動區</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <!-- 第一畫面 -->
+    <!-- Timeline (出現在所有主要畫面上) -->
+    <!-- 頂部時間軸 -->
+    <div id="timeline" class="timeline">
+
+        <svg class="timeline-wave" viewBox="0 0 400 40" preserveAspectRatio="none">
+            <path d="M0 5 Q 40 0,80 15 T 160 20 T240 20 T320 20 T400 5 " stroke="#ccc" stroke-width="1.5" fill="none" />
+
+        </svg>
+
+        <div class="timeline-dots">
+            <div class="dot active" style="left: 28%  ;top: 15px;"></div>
+            <div class="dot" style="top: 8px;"></div>
+            <div class="dot" style="right: 28%  ;top: 15px;"></div>
+        </div>
+    </div>
+    <div id="screen1" class="screen active">
+
+
+
+        <!-- 標題 -->
+        <h2 class="en-title index2" style="z-index: 2;">Water Lanterns</h2>
+        <h1 class="zh-title index2">水燈互動區</h1>
+
+        <!-- 內文 -->
+        <div class="description  animated-description index2">
+            有些話難以言明，幸好人間有「儀式」，<br>
+            為那些無法言說的情感，<br>
+            提供了另一種溫柔的出口。
+        </div>
+
+        <!-- 按鈕 -->
+        <div class="center-button">
+            <button id="go-to-screen2" class="next-button index2">進入</button>
+        </div>
+
+        <!-- Wave -->
+        <div class="wave-container">
+            <div class="wave"></div>
+        </div>
+    </div>
+
+
+    <!-- 第二畫面 -->
+    <div id="screen2" style="display:none">
+        <!-- 標題加上裝飾線條 -->
+        <div class="decorated-title">
+            <div class="line"></div>
+            <h2>使用畫筆留下訊息</h2>
+            <div class="line"></div>
+        </div>
+        <div class="canvas-toolbar-wrapper">
+
+            <!-- 畫布區域 -->
+            <canvas id="myCanvas" width="1000" height="1000"></canvas>
+            <!-- 工具列區塊 -->
+            <div class="toolbar">
+                <!-- 筆觸大小 -->
+
+
+                <!-- 顏色選擇 -->
+                <div class="color-palette">
+                    <div class="color-button active" data-color="#a47864" style="background:#a47864;"></div>
+                    <div class="color-button" data-color="#695650" style="background:#695650;"></div>
+                    <div class="color-button" data-color="#859aa6" style="background:#859aa6;"></div>
+                    <div class="color-button" data-color="#bda182" style="background:#bda182;"></div>
+                </div>
+                <div class="toolbar-divider"></div>
+
+                <div class="dropup">
+                    <button class="btn btn-secondary dropdown-toggle fixed-button" type="button" id="current-brush"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <div id="currentCircle" class="circle" style="width:10px;height:10px;"></div>
+                    </button>
+                    <ul class="dropdown-menu" id="brush-options">
+                        <li><a class="dropdown-item brush-option" href="#" data-size="10">
+                                <div class="circle" style="width:5px;height:5px;"></div>
+                            </a></li>
+                        <li><a class="dropdown-item brush-option" href="#" data-size="20">
+                                <div class="circle" style="width:10px;height:10px;"></div>
+                            </a></li>
+                        <li><a class="dropdown-item brush-option" href="#" data-size="40">
+                                <div class="circle" style="width:20px;height:20px;"></div>
+                            </a></li>
+                        <li><a class="dropdown-item brush-option" href="#" data-size="60">
+                                <div class="circle" style="width:30px;height:30px;"></div>
+                            </a></li>
+                    </ul>
+                </div>
+
+                <div class="toolbar-divider"></div>
+                <!-- 清除畫布 -->
+                <button class="btn-clear" id="clear-canvas">清空</button>
+            </div>
+
+        </div>
+        <!-- 下方按鈕 -->
+        <div class="submit-section">
+            <button class="next-button" id="uploadBtn">託付心念</button>
+        </div>
+    </div>
+
+    <!-- 第三畫面 -->
+    <div id="screen3" style="display:none">
+        <div class="intro-text">
+            <p>看向水面，尋找你的水燈，</p>
+            <p>閱讀他人留下訊息，傾聽水燈心念。</p>
+        </div>
+
+        <div class="final-image-container">
+            <img id="resultImg" src="" alt="最終繪圖結果" />
+        </div>
+        <div class="button-group">
+            <a id="saveBtn" class="next-button" download="my_drawing.png">儲存圖片</a>
+            <button id="retryBtn" class="next-button">再來一次</button>
+            <button id="showIntroBtn" class="next-button" data-bs-toggle="modal" data-bs-target="#introModal">
+                完整簡介</button>
+
+        </div>
+
+
+
+        <!-- 完整簡介 Modal -->
+        <div class="modal fade" id="introModal" tabindex="-1" aria-labelledby="introModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" style="" id="introModalLabel">完整簡介</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 這裡放你的完整簡介內容 -->
+                        <p>有些話難以言明，幸好人間有「儀式」，為那些無法言說的情感，提供了另一種溫柔的出口。</p>
+
+                        <p>在「水燈互動區」中，我們以互動投影裝置重現儀式的精神性。觀眾可掃描 QR Code，送出一盞數位水燈，將未曾說出的心念，悄悄託付，隨光漂流，緩緩前往空間的彼端。</p>
+
+                        <p>每一則水燈留言都是一段未竟的話語、一種對彼岸的凝視。觀者從送出水燈的那一刻起，便已參與了這場共享的儀式。</p>
+
+                        <p>而當你走到水燈終點，閱讀他人留下的訊息時，角色也隨著空間位置而悄然轉變，不再只是旁觀者，而是進入了「神靈」的視角，如觀音、如佛祖，成為那靜靜傾聽、默默承接眾生祈願的存在。</p>
+
+                        <p>這樣的設計靈感，來自台灣民間信仰中送水燈、燒王船的傳統儀式，也受到文學中對神靈角色的描寫啟發，如吳明益《睡眠的航線》中那位因傾聽而夜夜難眠的觀音菩薩。在此，傾聽不是被動的，而是一種深層的共鳴與承擔。
+                        </p>
+
+                        <p>展區同步展演 A_Root
+                            同根生的音樂作品〈水燈祭典〉，作為這場儀式的聲音軌跡。音樂從荒涼孤寂的低聲呢喃出發，逐漸推進至溫暖光明，如同病床上的人和陪病的家屬，在生與死之間搖晃，在沉默與轉生之間尋找出口。</p>
+
+                        <p>這首歌承載了一段真實的生命故事，也呼應著展區中每一則來自觀眾的託付與祈願。</p>
+
+                        <p>在這裡，互動成為儀式，水燈成為語言，而傾聽，即是一種回應。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!--  -->
+
+
+    </div>
+
+
+
+
+    <div id="screen0" style="display:none">
+        <h1>載入中...</h1>
+        <div class="wave-container">
+            <svg viewBox="0 0 120 28" class="wave-svg">
+                <defs>
+                    <linearGradient id="waveGradient" gradientTransform="rotate(90)">
+                        <stop offset="0%" stop-color="#2A73FE" stop-opacity="1" />
+                        <stop offset="100%" stop-color="#2A73FE" stop-opacity="0.7" />
+                    </linearGradient>
+                </defs>
+                <path fill="url(#waveGradient)" d="M0 10 Q 30 20 60 10 T 120 10 V 28 H 0 Z">
+                    <animate attributeName="d" dur="5s" repeatCount="indefinite" values="
+          M0 10 Q 30 20 60 10 T 120 10 V 28 H 0 Z;
+          M0 15 Q 30 10 60 15 T 120 15 V 28 H 0 Z;
+          M0 10 Q 30 20 60 10 T 120 10 V 28 H 0 Z
+        " />
+                </path>
+            </svg>
+        </div>
+    </div>
+
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+     <script src="script.js"></script>
+</body>
+
+</html>

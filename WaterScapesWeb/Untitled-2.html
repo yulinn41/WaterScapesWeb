@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>水燈互動區</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: "Microsoft JhengHei", sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        /*第一頁*/
+        /* 第一頁整體排版 */
+        #screen1,
+        #screen2,
+        #screen3 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+
+            text-align: center;
+            color: white;
+            padding: 2rem;
+
+            background-color: #111;
+        }
+
+        #screen1 {
+            padding-top: 20vh;
+            /* 留空間給上方 timeline */
+        }
+
+        #screen2 {
+            padding-top: 3rem;
+            /* 留空間給上方 timeline */
+            height: 100vh;
+            /* 全螢幕高度 */
+            /*overflow: hidden;*/
+            /* 禁止捲動 */
+            /*position: relative;*/
+            /* 保留定位能力 */
+        }
+
+        /* --- 時間線與圈圈 --- */
+        .timeline {
+            position: fixed;
+            top: env(safe-area-inset-top, 10px);
+            left: 0;
+            width: 100%;
+            height: 60px;
+            z-index: 1000;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* 波浪線條本體 */
+        .timeline-wave {
+            width: 90%;
+            height: 30px;
+        }
+
+        /* 圓形節點 */
+        .timeline-dots {
+            position: absolute;
+            top: 10px;
+            /* 根據波形調整 */
+            left: 5%;
+            width: 90%;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .timeline-dots .dot {
+            width: 14px;
+            height: 14px;
+            background-color: #aaa;
+            border-radius: 50%;
+            position: relative;
+            top: 0;
+        }
+
+        .timeline-dots .dot.active::before {
+            content: "";
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 8px;
+            height: 8px;
+            background-color: rgb(13, 204, 221);
+            border-radius: 50%;
+        }
+
+
+        /* 標題 */
+        .en-title {
+            font-size: 1.3rem;
+            color: #ffffff;
+            margin-bottom: 0.3rem;
+            z-index: 2;
+            letter-spacing: 0.1em;
+        }
+
+        .zh-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 2rem;
+            z-index: 2;
+            letter-spacing: 0.2em
+        }
+
+        .description {
+            font-size: 1rem;
+            color: #30d0ff;
+            line-height: 3rem;
+            /* ✅ 行距（建議 1.8 ~ 2.4 之間） */
+            letter-spacing: 0.2em;
+            /* ✅ 字距（建議 0.1em ~ 0.2em） */
+            margin-bottom: 2.5rem;
+            z-index: 2;
+        }
+
+        .animated-description {
+            opacity: 0;
+            filter: blur(5px);
+            animation: fadeInClear 1.8s ease-out forwards;
+            animation-delay: 0.5s;
+            /* 可選：延遲開始 */
+        }
+
+        @keyframes fadeInClear {
+            0% {
+                opacity: 0;
+                filter: blur(5px);
+            }
+
+            100% {
+                opacity: 1;
+                filter: blur(0);
+            }
+        }
+
+
+
+        .circle {
+            background-color: black;
+            border-radius: 50%;
+            margin: auto;
+        }
+
+        .dropdown-menu {
+            width: 50px;
+        }
+
+        .dropdown-item {
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 !important;
+        }
+
+        .fixed-button {
+            width: 80px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .canvas-toolbar-wrapper {
+            margin: 0 auto;
+            /* ✅ 置中對齊 */
+            flex-direction: column;
+            /* 🟢 預設手機：上下排列 */
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            width: calc(100vw - 4rem);
+            height: 90vh;
+        }
+
+        #myCanvas,
+        .toolbar {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #myCanvas {
+            border: 1px solid #ccc;
+            background-color: white;
+            max-width: 100%;
+            border-radius: 10px 10px 0 0;
+            /* ✅ 上半圓角讓 canvas 和 toolbar 無縫融合 */
+            margin-bottom: 0;
+            /* ✅ 避免 canvas 和 toolbar 之間留白 */
+        }
+
+        /* 工具列排版 */
+        .toolbar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #dcdcd0;
+            padding: 0.5rem 1rem;
+            border-radius: 0 0 10px 10px;
+            /* ✅ 只保留下半圓角 */
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin: 0 auto;
+            /* ✅ 置中對齊 */
+        }
+
+
+        .index2 {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 第二夜 */
+        .decorated-title {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .decorated-title h2 {
+            font-size: 1rem;
+            color: #30d0ff;
+            letter-spacing: .5rem;
+        }
+
+        .decorated-title .line {
+            flex: 1;
+            height: 1px;
+            background-color: #30d0ff;
+        }
+
+
+        /* 筆觸大小 */
+        .brush-size-selector,
+        .color-palette,
+        .btn-clear {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .size-options .circle {
+            border-radius: 50%;
+            background: #000;
+            cursor: pointer;
+        }
+
+        .current {
+            border: 2px solid #000;
+        }
+
+
+
+        .color-button {
+            width: 50px;
+            height: 30px;
+            border-radius: 3px;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .color-button.active {
+            border-color: #30d0ff;
+        }
+
+        /* 清除按鈕 */
+        .btn-clear {
+            background: #555555;
+            color: white;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 80px;
+            height: 45px;
+            text-align: center;
+            justify-content: center;
+        }
+
+        .toolbar-divider {
+            width: 1px;
+            height: 30px;
+            background-color: #999;
+            opacity: 0.4;
+        }
+
+
+        /* 下方按鈕 */
+        .submit-section {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+
+
+        /*第三頁*/
+        .intro-text {
+            text-align: center;
+            color: #30d0ff;
+            font-size: 1rem;
+            letter-spacing: 0.4rem;
+            margin-top: 3rem;
+            margin-bottom: 2rem;
+            line-height: 1;
+        }
+
+        .final-image-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .final-image-container img {
+            max-width: 90%;
+            max-height: 400px;
+            border-radius: 20px;
+            background: #8b9da9;
+            padding: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* ✅ 手機直式排版：上下排、按鈕變小、字變小 */
+        @media (max-width: 768px) {
+            .toolbar {
+                gap: 0.5rem;
+            }
+
+            .color-button,
+            .dropup,
+            .btn-clear,
+            .fixed-button {
+                width: 60px;
+                height: 25px;
+            }
+
+            .color-palette {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.1rem;
+                justify-content: center;
+            }
+
+            .description {
+                font-size: 0.85rem;
+                line-height: 3;
+            }
+
+            .intro-text {
+                font-size: 0.75rem;
+            }
+        }
+
+        /* ✅ 電腦橫式排版：左右排，畫布佔 60vh */
+        @media (min-aspect-ratio: 4/3) {
+            .canvas-toolbar-wrapper {
+                flex-direction: row;
+                /* 改為左右排列 */
+                height: 60vh;
+                max-width: 100vh;
+                /* 強制為接近正方形 */
+            }
+
+            #myCanvas {
+                height: 100%;
+                width: auto;
+                border-radius: 10px 0 0 10px;
+
+
+            }
+
+            .toolbar {
+                flex-direction: column;
+                /* 改為垂直排列 */
+                height: 100%;
+                width: 100px;
+                border-radius: 0 10px 10px 0;
+                gap: 1.5rem;
+                padding: 0;
+            }
+
+            .color-button {
+                width: 80px;
+                height: 50px;
+            }
+
+            .color-palette {
+                display: flex;
+                flex-direction: column;
+                gap: 0.8rem;
+            }
+
+            .toolbar-divider {
+                width: 100%;
+                height: 1px;
+                /* 橫線 */
+                margin: 0.4rem 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 第二畫面 -->
+    <div id="screen2" style="display:none">
+        <!-- 標題加上裝飾線條 -->
+        <div class="decorated-title">
+            <div class="line"></div>
+            <h2>使用畫筆留下訊息</h2>
+            <div class="line"></div>
+        </div>
+        <div class="canvas-toolbar-wrapper">
+
+            <!-- 畫布區域 -->
+            <canvas id="myCanvas" width="1000" height="1000"></canvas>
+            <!-- 工具列區塊 -->
+            <div class="toolbar">
+                <!-- 筆觸大小 -->
+
+
+                <!-- 顏色選擇 -->
+                <div class="color-palette">
+                    <div class="color-button active" data-color="#a47864" style="background:#a47864;"></div>
+                    <div class="color-button" data-color="#695650" style="background:#695650;"></div>
+                    <div class="color-button" data-color="#859aa6" style="background:#859aa6;"></div>
+                    <div class="color-button" data-color="#bda182" style="background:#bda182;"></div>
+                </div>
+                <div class="toolbar-divider"></div>
+
+                <div class="dropup">
+                    <button class="btn btn-secondary dropdown-toggle fixed-button" type="button" id="current-brush"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <div id="currentCircle" class="circle" style="width:10px;height:10px;"></div>
+                    </button>
+                    <ul class="dropdown-menu" id="brush-options">
+                        <li><a class="dropdown-item brush-option" href="#" data-size="10">
+                                <div class="circle" style="width:5px;height:5px;"></div>
+                            </a></li>
+                        <li><a class="dropdown-item brush-option" href="#" data-size="20">
+                                <div class="circle" style="width:10px;height:10px;"></div>
+                            </a></li>
+                        <li><a class="dropdown-item brush-option" href="#" data-size="40">
+                                <div class="circle" style="width:20px;height:20px;"></div>
+                            </a></li>
+                        <li><a class="dropdown-item brush-option" href="#" data-size="60">
+                                <div class="circle" style="width:30px;height:30px;"></div>
+                            </a></li>
+                    </ul>
+                </div>
+
+                <div class="toolbar-divider"></div>
+                <!-- 清除畫布 -->
+                <button class="btn-clear" id="clear-canvas">清空</button>
+            </div>
+
+        </div>
+        <!-- 下方按鈕 -->
+        <div class="submit-section">
+            <button class="next-button" id="uploadBtn">託付心念</button>
+        </div>
+    </div>
+
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+    const canvas = document.getElementById("myCanvas");
+    const ctx = canvas.getContext("2d");
+    const buttons = document.querySelectorAll(".color-button");
+    let currentColor = "#6b2f1c";
+    let isDrawing = false;
+    let lastX = 0, lastY = 0;
+
+    ctx.lineWidth = 20;
+
+    buttons.forEach(button => {
+        button.addEventListener("click", () => {
+            buttons.forEach(btn => btn.classList.remove("active"));
+            button.classList.add("active");
+            currentColor = button.getAttribute("data-color");
+        });
+    });
+
+    function getCoordinates(event) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        let x, y;
+        if (event.touches) {
+            x = (event.touches[0].clientX - rect.left) * scaleX;
+            y = (event.touches[0].clientY - rect.top) * scaleY;
+        } else {
+            x = (event.clientX - rect.left) * scaleX;
+            y = (event.clientY - rect.top) * scaleY;
+        }
+        return { x, y };
+    }
+
+    function startDrawing(event) {
+        isDrawing = true;
+        const { x, y } = getCoordinates(event);
+        lastX = x;
+        lastY = y;
+    }
+
+    function draw(event) {
+        if (!isDrawing) return;
+        event.preventDefault();
+        const { x, y } = getCoordinates(event);
+
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.strokeStyle = currentColor;
+        ctx.lineCap = "round";
+        ctx.stroke();
+
+        lastX = x;
+        lastY = y;
+    }
+
+    function stopDrawing() {
+        isDrawing = false;
+    }
+
+    canvas.addEventListener("mousedown", startDrawing);
+    canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("mouseup", stopDrawing);
+    canvas.addEventListener("mouseout", stopDrawing);
+    canvas.addEventListener("touchstart", startDrawing, { passive: false });
+    canvas.addEventListener("touchmove", draw, { passive: false });
+    canvas.addEventListener("touchend", stopDrawing);
+
+    document.getElementById("clear-canvas").addEventListener("click", () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    const currentCircle = document.getElementById("currentCircle");
+    document.querySelectorAll(".brush-option").forEach(option => {
+        option.addEventListener("click", (e) => {
+            e.preventDefault();
+            const size = parseInt(option.getAttribute("data-size"));
+            ctx.lineWidth = size;
+            currentCircle.style.width = `${size / 2}px`;
+            currentCircle.style.height = `${size / 2}px`;
+        });
+    });
+
+
+    const screens = {
+        1: document.getElementById("screen1"),
+        2: document.getElementById("screen2"),
+        3: document.getElementById("screen3")
+
+    };
+    screens[0] = document.getElementById("screen0");
+
+    const resultImg = document.getElementById("resultImg");
+    const saveBtn = document.getElementById("saveBtn");
+
+    // ✅ 控制畫面切換 & dot 狀態的主函式
+    function setActiveScreen(screenNumber) {
+        Object.values(screens).forEach(screen => screen.style.display = "none");
+
+        const current = screens[screenNumber];
+        if (current) current.style.display = "block";
+
+        // ✅ 控制 timeline 顯示：只在 1, 2, 3 頁出現
+        const timeline = document.getElementById('timeline');
+        if ([1, 2, 3].includes(screenNumber)) {
+            timeline.style.display = 'flex';
+        } else {
+            timeline.style.display = 'none';
+        }
+
+        // ✅ 更新 dot 狀態
+        const dots = document.querySelectorAll('.timeline .dot');
+        dots.forEach(dot => {
+            dot.classList.remove('active');
+            dot.innerHTML = '';
+        });
+        if (dots[screenNumber - 1]) {
+            dots[screenNumber - 1].classList.add('active');
+            dots[screenNumber - 1].innerHTML = '<div class="inner-dot"></div>';
+        }
+    }
+
+    // ➤ 第一頁 ➔ 第二頁
+    document.getElementById('go-to-screen2').addEventListener('click', () => {
+        setActiveScreen(2);
+    });
+
+    // ➤ 畫完 ➔ 第三頁
+    document.getElementById("uploadBtn").addEventListener("click", () => {
+        const canvas = document.getElementById("myCanvas");
+        const dataUrl = canvas.toDataURL("image/png");
+        resultImg.src = dataUrl;
+        saveBtn.href = dataUrl;
+        setActiveScreen(3);
+    });
+
+    // ➤ 再來一次 ➔ 第二頁
+    document.getElementById("retryBtn").addEventListener("click", () => {
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        setActiveScreen(2);
+    });
+
+    // 預設顯示第一頁
+    setActiveScreen(1);
+</script>
+
+
+</script>
+</body>
+
+</html>
