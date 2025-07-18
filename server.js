@@ -128,3 +128,11 @@ server.listen(PORT, () => {
     console.log(`伺服器正在執行，端口：${PORT}`);
     console.log(`靜態網頁可訪問：http://localhost:${PORT}`);
 });
+// 工具函數：檢查 canvas 是否為空
+function isCanvasBlank(canvas) {
+    const blank = document.createElement("canvas"); // 建立一個空白的 canvas
+    blank.width = canvas.width;
+    blank.height = canvas.height;
+    return canvas.toDataURL() === blank.toDataURL(); // 比較 dataURL，判斷是否為空
+}
+
