@@ -3,20 +3,27 @@ body {
     background-color: #f4f4f4;
     text-align: center;
 }
-/* 所有 screen 預設都隱藏 */
+/* 全局規則，放在 style.css 最前面 */
+
+/* 1. 基本隱藏 */
 .screen {
   display: none;
 }
 
-/* screen1 和 screen3 顯示時就用 block（或 flex，看你需要） */
-#screen1.active,
-#screen3.active {
-  display: block;
+/* 2. 有 active 才顯示 */
+.screen.active {
+  display: flex;       /* screen1/screen3 你要用 flex，screen2 如果要用 grid 也行 */
 }
 
+/* 3. 如果 screen2 需要 grid，可以再多一條 */
+#screen2.active {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  /* … 其餘設定 … */
+}
 
-/* timeline 同理 */
-#timeline {
+/* 時間軸同理 */
+.timeline {
   display: none;
 }
 .timeline.active {
@@ -26,8 +33,8 @@ body {
 
 /*第一頁*/
 /* 第一頁整體排版 */
-#screen1,
-#screen3 {
+#screen1.active,
+#screen3.active {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -41,9 +48,8 @@ body {
     background-color: #111;
 }
 
-#screen1 {
+#screen1 .active{
     padding-top: 20vh;
-    /* 留空間給上方 timeline */
 }
 
 
