@@ -11,6 +11,10 @@ const app = express();
 
 // 提供靜態檔案 (將 public 資料夾設為根目錄)//改這個
 app.use(express.static(path.join(__dirname, "WaterScapesWeb")));
+// 並且 catch-all 路由放在最後，保證所有檔案都優先被 express.static 處理
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "WaterScapesWeb", "index.html"));
+});
 
 // 創建 HTTP 伺服器，並將 Express 設置為 handler
 const server = http.createServer(app);
