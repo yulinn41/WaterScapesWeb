@@ -1,0 +1,65 @@
+/*第三頁*/
+.intro-text {
+    text-align: center;
+    color: #30d0ff;
+    font-size: 1rem;
+    letter-spacing: 0.4rem;
+    margin-top: 3rem;
+    margin-bottom: 2rem;
+    line-height: 1;
+}
+
+.final-image-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.final-image-container img {
+    max-width: 90%;
+    max-height: 400px;
+    border-radius: 20px;
+    background: #8b9da9;
+    padding: 1rem;
+}
+
+.button-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+}
+
+/* ✅ 自訂 modal 背景與文字樣式 */
+#introModal .modal-content {
+    background-color: #212121;
+    /* ✅ 修改為想要的背景色 */
+    color: #ffffff;
+    /* 預設文字顏色，可被 <p> 覆蓋 */
+    border-radius: 12px;
+}
+
+#introModal .modal-body {
+    max-height: 60vh;
+    /* ✅ 高度限制避免爆版 */
+    overflow-y: auto;
+    /* ✅ 內容多可滾動 */
+    padding: 1.5rem;
+    line-height: 1.8;
+    /* ✅ 調整行距 */
+    text-align: left;
+}
+
+#introModal .modal-body p {
+    color: #cccccc;
+    /* ✅ 單獨調整文字顏色 */
+    margin-bottom: 1.2rem;
+    /* ✅ 每段間距 */
+}
+
+#introModal .btn-close {
+    filter: invert(1);
+    /* ✅ 白色圖示 */
+}

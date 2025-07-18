@@ -1,0 +1,227 @@
+/* ---------- 第二畫面整體 ---------- */
+/* Screen2.css ↓ 最上方加入 */
+/* Screen2.css ↓ 最上方加入 */
+#screen2 {
+    display: none;
+    grid-template-rows: auto 1fr auto;
+    height: calc(100vh 60px);
+    /* 減去頂部 timeline 的 60px */
+    box-sizing: border-box;
+    padding: 0 1rem;
+}
+
+/* ---------- 第二畫面整體（只在 .active 時啟用） ---------- */
+#screen2.active {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    height: calc(100vh - 60px);
+    /* 減去頂部 timeline 的 60px */
+    box-sizing: border-box;
+    padding: 0 1rem;
+}
+
+/* 標題區與按鈕區固定大小 */
+/* 2. 標題區：自動高度 */
+.decorated-title {
+    grid-row: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0 0.5rem;
+}
+
+.decorated-title h2 {
+    font-size: 1rem;
+    color: #30d0ff;
+    letter-spacing: .5rem;
+}
+
+.decorated-title .line {
+    flex: 1;
+    height: 1px;
+    background-color: #30d0ff;
+}
+
+
+/* ---------- 畫布＋工具列彈性區 ---------- */
+#currentCircle {
+    pointer-events: none;
+    /* 不攔截滑鼠事件 */
+    border-radius: 50%;
+    /* 必備：轉成圓形 */
+    aspect-ratio: 1 / 1;
+    /* 保持寬高比固定為 1 */
+    /* 寬度、高度由 JS 動態設定一樣的值 */
+}
+
+/* 這段一定要放在最上面，並且 selector 夠具體或加 !important */
+#screen2 .canvas-toolbar-wrapper {
+    display: grid !important;
+    grid-template-rows: 1fr auto;
+    width: 100% !important;
+
+    /* ★ 讓 wrapper 剛好撐滿 Grid 分配的那一行 ★ */
+    height: 100% !important;
+    min-height: 0;
+    /* 允許在 Grid 裡被壓縮，不自動撐過內容 */
+
+    box-sizing: border-box;
+}
+
+
+
+#myCanvas {
+    grid-row: 1;
+    width: auto;
+    /* 寬度由 aspect-ratio 推算 */
+    height: 100%;
+    /* 撐滿 wrapper 的高度 */
+    max-height: 100%;
+    /* 超出格線時收窄 */
+    max-width: 100%;
+    /* 防止寬度超出邊界 */
+    aspect-ratio: 1 / 2;
+    /* 寬高比 1:2 */
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 10px 10px 0 0;
+    display: block;
+    /* 恢復預設區塊元素 */
+    /* ↓ 關鍵：讓 Grid/Flex 可以把它壓到小於 1000px */
+    min-width: 0;
+    min-height: 0;
+}
+
+/* 5. 工具列：固定高度、自動換行 */
+.toolbar {
+    grid-row: 2;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: #dcdcd0;
+    border-radius: 0 0 10px 10px;
+    box-sizing: border-box;
+}
+
+/* 6. 下方按鈕區：自動高度 */
+.submit-section {
+    grid-row: 3;
+    display: flex;
+    justify-content: center;
+    margin: 0.5rem 0 1rem;
+}
+
+
+
+
+
+
+/*兩個案紐*/
+/* 按鈕大小固定或用彈性百分比都可以 */
+.tool-btn {
+    flex: 0 0 auto;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 3px solid transparent;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+/* 橡皮擦按鈕也套用同樣的外框 */
+.tool-btn.active {
+    border-color: #30d0ff;
+
+}
+
+/* 下拉 */
+.dropdown-menu {
+    width: 50px;
+}
+
+.dropdown-item {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+}
+
+.fixed-button {
+    width: 80px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+
+
+
+
+
+
+.index2 {
+    position: relative;
+    z-index: 2;
+}
+
+
+
+/* 筆觸大小 */
+.brush-size-selector,
+.color-palette,
+.btn-clear {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.size-options .circle {
+    border-radius: 50%;
+    background: #000;
+    cursor: pointer;
+}
+
+.current {
+    border: 2px solid #000;
+}
+
+
+
+.color-button {
+    width: 50px;
+    height: 30px;
+    border-radius: 3px;
+    cursor: pointer;
+    border: 3px solid transparent;
+}
+
+.color-button.active {
+    border-color: #30d0ff;
+}
+
+/* 清除按鈕 */
+.btn-clear {
+    background: #555555;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 80px;
+    height: 45px;
+    text-align: center;
+    justify-content: center;
+}
+
+.toolbar-divider {
+    width: 1px;
+    height: 30px;
+    background-color: #999;
+    opacity: 0.4;
+}
