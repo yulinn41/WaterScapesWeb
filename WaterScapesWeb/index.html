@@ -11,7 +11,8 @@
     <title>水燈互動區</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="style.css">
-
+<link rel="stylesheet" href="Screen2.css">
+<link rel="stylesheet" href="Screen3.css">
 </head>
 
 <body>
@@ -32,7 +33,7 @@
             <div class="dot" style="right: 28%  ;top: 15px;"></div>
         </div>
     </div>
-    <div id="screen1" class="screen active">
+    <div id="screen1" class="screen ">
 
 
 
@@ -53,14 +54,14 @@
         </div>
 
         <!-- Wave -->
-        <div class="wave-container">
+        <!--<div class="wave-container">
             <div class="wave"></div>
-        </div>
+        </div>-->
     </div>
 
 
     <!-- 第二畫面 -->
-    <div id="screen2" style="display:none">
+    <div id="screen2" class="screen active">
         <!-- 標題加上裝飾線條 -->
         <div class="decorated-title">
             <div class="line"></div>
@@ -70,7 +71,7 @@
         <div class="canvas-toolbar-wrapper">
 
             <!-- 畫布區域 -->
-            <canvas id="myCanvas" width="1000" height="1000"></canvas>
+            <canvas id="myCanvas" width="500" height="1000"></canvas>
             <!-- 工具列區塊 -->
             <div class="toolbar">
                 <!-- 筆觸大小 -->
@@ -88,7 +89,7 @@
                 <div class="dropup">
                     <button class="btn btn-secondary dropdown-toggle fixed-button" type="button" id="current-brush"
                         data-bs-toggle="dropdown" aria-expanded="false">
-                        <div id="currentCircle" class="circle" style="width:10px;height:10px;"></div>
+                        <div id="currentCircle" class="circle" style="width:10px;height:10px "></div>
                     </button>
                     <ul class="dropdown-menu" id="brush-options">
                         <li><a class="dropdown-item brush-option" href="#" data-size="10">
@@ -101,13 +102,17 @@
                                 <div class="circle" style="width:20px;height:20px;"></div>
                             </a></li>
                         <li><a class="dropdown-item brush-option" href="#" data-size="60">
-                                <div class="circle" style="width:30px;height:30px;"></div>
+                                <div class="circle" style="width:20px;height:20px; "></div>
                             </a></li>
                     </ul>
                 </div>
 
                 <div class="toolbar-divider"></div>
                 <!-- 清除畫布 -->
+                 <!-- … 既有的工具列按鈕 … -->
+<button id="undoBtn" class="tool-btn" title="撤回上一筆">↺</button>
+<button id="eraserBtn" class="tool-btn" title="橡皮擦">🧽</button>
+
                 <button class="btn-clear" id="clear-canvas">清空</button>
             </div>
 
@@ -119,7 +124,7 @@
     </div>
 
     <!-- 第三畫面 -->
-    <div id="screen3" style="display:none">
+    <div id="screen3" class="screen ">
         <div class="intro-text">
             <p>看向水面，尋找你的水燈，</p>
             <p>閱讀他人留下訊息，傾聽水燈心念。</p>
