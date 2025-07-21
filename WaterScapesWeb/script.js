@@ -1,89 +1,32 @@
-import { WebSocketServer } from "ws";   // node >=18 支援 ES Module
-// const { WebSocketServer } = require("ws"); // 若用 CommonJS
+/* --- WebSocket 連線設定（放檔案最前面） ------------------------------ */
+let ws;
+let unityConnected = false;
 
-const wss = new WebSocketServer({ port: 8080 });
+function connectWebSocket() {
+  ws = new WebSocket("wss://creativeexpotaiwan-waterscapes.onrender.com");
+  ws.binaryType = "arraybuffer";     // ← 確保瀏覽器用 Binary
 
-// 記錄哪一端是 Unity、哪一端是瀏覽器
-let unitySocket  = null;
-let webSockets   = new Set();
-
-wss.on("connection", socket => {
-  console.log("👉 新連線");
-
-  // 先等第一則訊息來判斷身分
-  socket.once("message", (data, isBinary) => {
-    if (!isBinary && data.toString() === "ClientType:Unity") {
-      unitySocket = socket;
-      socket.send("UnityStatus:Connected");
-      console.log("✅ Unity 端連上");
-    } else {
-      webSockets.add(socket);
-      socket.send("UnityStatus:" + (unitySocket ? "Connected" : "Disconnected"));
-      console.log("✅ Web 端連上");
-      // 如果這是瀏覽器，要把收到的第一包資料也處理掉
-      handleWebData(socket, data, isBinary);
+  ws.onopen    = () => console.log("已連接伺服器");
+  ws.onclose   = () => { console.log("斷線，1 秒後重連"); setTimeout(connectWebSocket, 1000); };
+  ws.onerror   = err => console.error("WS 錯誤:", err);
+  ws.onmessage = ev  => {
+    if (typeof ev.data === "string") {
+      if (ev.data.startsWith("UnityStatus:")) {
+        unityConnected = ev.data.endsWith("Connected");
+        console.log("Unity 連線狀態:", unityConnected);
+      } else if (ev.data.startsWith("ImageQueue:")) {
+        const n = ev.data.split(":")[1];
+        alert(`圖片已排隊，當前數量：${n}`);
+      }
     }
-
-    // 後續所有訊息
-    socket.on("message", (d, isB) => {
-      if (socket === unitySocket) handleUnityData(socket, d, isB);
-      else                        handleWebData (socket, d, isB);
-    });
-  });
-
-  socket.on("close", () => {
-    if (socket === unitySocket) {
-      unitySocket = null;
-      console.log("❌ Unity 端離線");
-      // 通知所有瀏覽器
-      webSockets.forEach(ws => ws.send("UnityStatus:Disconnected"));
-    } else {
-      webSockets.delete(socket);
-      console.log("❌ Web 端離線");
-    }
-  });
-});
-
-// ---------- 處理函式 ----------
-function handleWebData(ws, data, isBinary) {
-  if (!unitySocket || unitySocket.readyState !== 1) {
-    ws.send("UnityStatus:Disconnected");
-    return;
-  }
-
-  if (isBinary) {
-    // 這裡的 data 是 Buffer，直接轉送
-    unitySocket.send(data, { binary: true });
-    // （可選）回覆排隊數
-    const queueCount = 1;   // 依你的邏輯增加
-    ws.send("ImageQueue:" + queueCount);
-  } else {
-    // 文字訊息就照需求處理
-    const msg = data.toString();
-    console.log("🌐 Text from Web:", msg);
-  }
+  };
 }
+connectWebSocket();
 
-function handleUnityData(ws, data, isBinary) {
-  if (isBinary) {
-    console.log("🎮 Unity 傳來", data.length, "bytes（二進位）");
-    // 你可能不需要處理，或把結果回覆給瀏覽器
-  } else {
-    const msg = data.toString();
-    console.log("🎮 Text from Unity:", msg);
-    // broadcast 回所有瀏覽器
-    webSockets.forEach(c => c.send(msg));
-  }
-}
+/* --- 以下保留你原本的 Canvas / 上傳程式 ------------------------------ */
+/* ・・・中略・・・ */
+/* 這裡的 (4) 傳送圖片資料流程是 OK 的：toDataURL → fetch → blob → arrayBuffer → ws.send(...) */
 
-console.log("🌐 WebSocket Server 啟動在 ws://localhost:8080");
-
-
-
-
-
-
-// --- Canvas 繪製與工具列功能 ---
 // --- Canvas 繪製與工具列功能 ---
 const canvas       = document.getElementById("myCanvas");
 const ctx          = canvas.getContext("2d");
@@ -317,8 +260,8 @@ document.getElementById("uploadBtn").addEventListener("click",  async ()  => {
     const imageData = tmp.toDataURL("image/png");
     
 // 1. 把 dataURL 轉 Blob → ArrayBuffer
-const blob        = await (await fetch(imageData)).blob();   // fetch 可把 base64 轉成 Blob
-const arrayBuffer = await blob.arrayBuffer();
+    const blob        = await (await fetch(imageData)).blob();   // fetch 可把 base64 轉成 Blob
+    const arrayBuffer = await blob.arrayBuffer();
 
     ws.send(arrayBuffer);
 
