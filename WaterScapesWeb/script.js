@@ -1,41 +1,86 @@
-// --- WebSocket 連線設定 ---
-let ws;
-let unityConnected = false;
+import { WebSocketServer } from "ws";   // node >=18 支援 ES Module
+// const { WebSocketServer } = require("ws"); // 若用 CommonJS
 
-function connectWebSocket() {
-    ws = new WebSocket("wss://creativeexpotaiwan-waterscapes.onrender.com");
+const wss = new WebSocketServer({ port: 8080 });
 
-    ws.onopen = () => {
-        console.log("已連接到伺服器");
-    };
+// 記錄哪一端是 Unity、哪一端是瀏覽器
+let unitySocket  = null;
+let webSockets   = new Set();
 
-    ws.onclose = () => {
-        console.log("伺服器連接已斷開，1秒後重試");
-        setTimeout(connectWebSocket, 1000);
-    };
+wss.on("connection", socket => {
+  console.log("👉 新連線");
 
-    ws.onerror = (error) => {
-        console.error("WebSocket 錯誤: ", error);
-    };
+  // 先等第一則訊息來判斷身分
+  socket.once("message", (data, isBinary) => {
+    if (!isBinary && data.toString() === "ClientType:Unity") {
+      unitySocket = socket;
+      socket.send("UnityStatus:Connected");
+      console.log("✅ Unity 端連上");
+    } else {
+      webSockets.add(socket);
+      socket.send("UnityStatus:" + (unitySocket ? "Connected" : "Disconnected"));
+      console.log("✅ Web 端連上");
+      // 如果這是瀏覽器，要把收到的第一包資料也處理掉
+      handleWebData(socket, data, isBinary);
+    }
 
-    ws.onmessage = (event) => {
-        if (event.data.startsWith("UnityStatus:")) {
-            const status = event.data.split(":")[1];
-            unityConnected = (status === "Connected");
-            console.log(`互動軟體已${ unityConnected ? "連接" : "斷開" }`);
-        }
-        else if (event.data.startsWith("ImageQueue:")) {
-            const queueCount = event.data.split(":")[1];
-            document.getElementById("queue-status").innerText = `排隊圖片數量：${queueCount}`;
-            alert(`圖片已上傳！當前排隊數量：${queueCount}`);
-        }
-        else {
-            console.log("其他消息:", event.data);
-        }
-    };
+    // 後續所有訊息
+    socket.on("message", (d, isB) => {
+      if (socket === unitySocket) handleUnityData(socket, d, isB);
+      else                        handleWebData (socket, d, isB);
+    });
+  });
+
+  socket.on("close", () => {
+    if (socket === unitySocket) {
+      unitySocket = null;
+      console.log("❌ Unity 端離線");
+      // 通知所有瀏覽器
+      webSockets.forEach(ws => ws.send("UnityStatus:Disconnected"));
+    } else {
+      webSockets.delete(socket);
+      console.log("❌ Web 端離線");
+    }
+  });
+});
+
+// ---------- 處理函式 ----------
+function handleWebData(ws, data, isBinary) {
+  if (!unitySocket || unitySocket.readyState !== 1) {
+    ws.send("UnityStatus:Disconnected");
+    return;
+  }
+
+  if (isBinary) {
+    // 這裡的 data 是 Buffer，直接轉送
+    unitySocket.send(data, { binary: true });
+    // （可選）回覆排隊數
+    const queueCount = 1;   // 依你的邏輯增加
+    ws.send("ImageQueue:" + queueCount);
+  } else {
+    // 文字訊息就照需求處理
+    const msg = data.toString();
+    console.log("🌐 Text from Web:", msg);
+  }
 }
 
-connectWebSocket();
+function handleUnityData(ws, data, isBinary) {
+  if (isBinary) {
+    console.log("🎮 Unity 傳來", data.length, "bytes（二進位）");
+    // 你可能不需要處理，或把結果回覆給瀏覽器
+  } else {
+    const msg = data.toString();
+    console.log("🎮 Text from Unity:", msg);
+    // broadcast 回所有瀏覽器
+    webSockets.forEach(c => c.send(msg));
+  }
+}
+
+console.log("🌐 WebSocket Server 啟動在 ws://localhost:8080");
+
+
+
+
 
 
 // --- Canvas 繪製與工具列功能 ---
