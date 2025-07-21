@@ -260,7 +260,7 @@ document.getElementById("uploadBtn").addEventListener("click",  async ()  => {
     tmp.width  = 256;
     tmp.height = 384;
     const tctx = tmp.getContext("2d");
-    tctx.fillStyle = "#FFEEDE";
+    tctx.fillStyle = "#ffffffff";
     tctx.fillRect(0, 0, tmp.width, tmp.height);
     tctx.drawImage(canvas,
         0, 0, canvas.width, canvas.height,
