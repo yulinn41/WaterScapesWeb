@@ -1,24 +1,33 @@
 /* ---------- 第二畫面整體 ---------- */
 /* Screen2.css ↓ 最上方加入 */
-/* Screen2.css ↓ 最上方加入 */
 #screen2 {
-    display: none;
-    grid-template-rows: auto 1fr auto;
-    height: calc(100vh 60px);
-    /* 減去頂部 timeline 的 60px */
-    box-sizing: border-box;
-    padding: 0 1rem;
+  display: none;
+  grid-template-rows: auto 1fr auto;
+  height: calc(
+    var(--vh, 1vh) * 100    /* 100 * 1% = 真實可視高度 */
+    - 60px                  /* timeline 高度 */
+    - env(safe-area-inset-top)
+    - env(safe-area-inset-bottom)
+  );
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
 
 /* ---------- 第二畫面整體（只在 .active 時啟用） ---------- */
+/* 第二畫面，全螢幕高度扣除 timeline 和 safe-area */
 #screen2.active {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    height: calc(100vh - 60px);
-    /* 減去頂部 timeline 的 60px */
-    box-sizing: border-box;
-    padding: 0 1rem;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: calc(
+    var(--vh, 1vh) * 100    /* 100 * 1% = 真實可視高度 */
+    - 60px                  /* timeline 高度 */
+    - env(safe-area-inset-top)
+    - env(safe-area-inset-bottom)
+  );
+  padding: 0 1rem;
+  box-sizing: border-box;
 }
+
 
 /* 標題區與按鈕區固定大小 */
 /* 2. 標題區：自動高度 */
@@ -28,7 +37,7 @@
     align-items: center;
     justify-content: center;
     gap: 1rem;
-    margin: 1rem 0 0.5rem;
+    margin: 60px 0rem 0rem 0rem;
 }
 
 .decorated-title h2 {
@@ -81,7 +90,7 @@
     /* 超出格線時收窄 */
     max-width: 100%;
     /* 防止寬度超出邊界 */
-    aspect-ratio: 1 / 2;
+    aspect-ratio: 1 / 1.5;
     /* 寬高比 1:2 */
     background: white;
     border: 1px solid #ccc;

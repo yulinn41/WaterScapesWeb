@@ -1,3 +1,7 @@
+:root {
+  /* 預設 fallback 為 1vh */
+  --vh: 1vh;
+}
 
 /* style.css（或 Screen2.css 最前面） */
 html, body {
@@ -7,32 +11,10 @@ html, body {
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
   box-sizing: border-box;
-}
-
-/* 第二畫面，全螢幕高度扣除 timeline 和 safe-area */
-#screen2.active {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  height: calc(
-    100vh
-    - 60px
-    - env(safe-area-inset-top)
-    - env(safe-area-inset-bottom)
-  );
-  padding: 0 1rem;
-  box-sizing: border-box;
-}
-
-
-
-
-body {
-    font-family: "Microsoft JhengHei", sans-serif;
+      font-family: "Microsoft JhengHei", sans-serif;
     background-color: #f4f4f4;
     text-align: center;
 }
-/* 全局規則，放在 style.css 最前面 */
-
 /* 1. 基本隱藏 */
 .screen {
   display: none;
@@ -132,7 +114,7 @@ body {
 /* 標題 */
 .en-title {
     font-size: 1.3rem;
-    color: #ffffff;
+    color: #00ffb7;
     margin-bottom: 0.3rem;
     z-index: 2;
     letter-spacing: 0.1em;
