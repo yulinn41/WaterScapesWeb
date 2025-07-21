@@ -3,7 +3,7 @@ let ws;
 let unityConnected = false;
 
 function connectWebSocket() {
-    ws = new WebSocket("wss://nantoulightfestival.onrender.com");
+    ws = new WebSocket("wss://creativeexpotaiwan-waterscapes.onrender.com");
 
     ws.onopen = () => {
         console.log("已連接到伺服器");
