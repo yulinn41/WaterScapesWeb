@@ -1,3 +1,31 @@
+
+/* style.css（或 Screen2.css 最前面） */
+html, body {
+  height: 100vh;
+  height: -webkit-fill-available;
+  margin: 0;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  box-sizing: border-box;
+}
+
+/* 第二畫面，全螢幕高度扣除 timeline 和 safe-area */
+#screen2.active {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: calc(
+    100vh
+    - 60px
+    - env(safe-area-inset-top)
+    - env(safe-area-inset-bottom)
+  );
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+
+
+
 body {
     font-family: "Microsoft JhengHei", sans-serif;
     background-color: #f4f4f4;
@@ -15,12 +43,6 @@ body {
   display: flex;       /* screen1/screen3 你要用 flex，screen2 如果要用 grid 也行 */
 }
 
-/* 3. 如果 screen2 需要 grid，可以再多一條 */
-#screen2.active {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  /* … 其餘設定 … */
-}
 
 /* 時間軸同理 */
 .timeline {
