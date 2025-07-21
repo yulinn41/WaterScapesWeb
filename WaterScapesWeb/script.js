@@ -243,7 +243,7 @@ function setActiveScreen(n) {
 document.getElementById("go-to-screen2").addEventListener("click", () => setActiveScreen(2));
 
 // 上傳 → 第三頁
-document.getElementById("uploadBtn").addEventListener("click", () => {
+document.getElementById("uploadBtn").addEventListener("click",  async ()  => {
     // (1) 空畫布檢查
     if (isCanvasBlank()) {
         return alert("你還沒有畫圖，請先畫圖再上傳！");
@@ -270,7 +270,12 @@ document.getElementById("uploadBtn").addEventListener("click", () => {
 
     // (4) 傳送圖片資料
     const imageData = tmp.toDataURL("image/png");
-    ws.send(imageData);
+    
+// 1. 把 dataURL 轉 Blob → ArrayBuffer
+const blob        = await (await fetch(imageData)).blob();   // fetch 可把 base64 轉成 Blob
+const arrayBuffer = await blob.arrayBuffer();
+
+    ws.send(arrayBuffer);
 
     // (5) 清空畫布記錄
     strokes = [];
