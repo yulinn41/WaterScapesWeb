@@ -85,3 +85,10 @@ wss.on("connection", ws => {
 server.listen(PORT, () =>
   console.log(`🌐 Server ready → http://localhost:${PORT}`)
 );
+// 全域錯誤攔截
+process.on("uncaughtException", err => {
+  console.error("🛑 Uncaught Exception:", err);
+});
+process.on("unhandledRejection", err => {
+  console.error("🛑 Unhandled Rejection:", err);
+});
