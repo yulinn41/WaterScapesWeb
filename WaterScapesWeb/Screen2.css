@@ -1,11 +1,10 @@
 /* ---------- 第二畫面整體 ---------- */
-/* Screen2.css ↓ 最上方加入 */
 #screen2 {
   display: none;
   grid-template-rows: auto 1fr auto;
+  row-gap: 1rem;
   height: calc(
     var(--vh, 1vh) * 100    /* 100 * 1% = 真實可視高度 */
-    - 60px                  /* timeline 高度 */
     - env(safe-area-inset-top)
     - env(safe-area-inset-bottom)
   );
@@ -13,14 +12,14 @@
   box-sizing: border-box;
 }
 
-/* ---------- 第二畫面整體（只在 .active 時啟用） ---------- */
-/* 第二畫面，全螢幕高度扣除 timeline 和 safe-area */
+/* ----------只在 .active 時啟用） ---------- */
+/* 全螢幕高度扣除 safe-area */
 #screen2.active {
   display: grid;
   grid-template-rows: auto 1fr auto;
+  row-gap: 1rem;
   height: calc(
     var(--vh, 1vh) * 100    /* 100 * 1% = 真實可視高度 */
-    - 60px                  /* timeline 高度 */
     - env(safe-area-inset-top)
     - env(safe-area-inset-bottom)
   );
@@ -53,68 +52,116 @@
 }
 
 
-/* ---------- 畫布＋工具列彈性區 ---------- */
-#currentCircle {
-    pointer-events: none;
-    /* 不攔截滑鼠事件 */
-    border-radius: 50%;
-    /* 必備：轉成圓形 */
-    aspect-ratio: 1 / 1;
-    /* 保持寬高比固定為 1 */
-    /* 寬度、高度由 JS 動態設定一樣的值 */
-}
+
 
 /* 這段一定要放在最上面，並且 selector 夠具體或加 !important */
-#screen2 .canvas-toolbar-wrapper {
-    display: grid !important;
-    grid-template-rows: 1fr auto;
-    width: 100% !important;
+/* 必放最頂！確保 selector 具體或加 !important */
+ .canvas-toolbar-wrapper {
 
-    /* ★ 讓 wrapper 剛好撐滿 Grid 分配的那一行 ★ */
-    height: 100% !important;
-    min-height: 0;
-    /* 允許在 Grid 裡被壓縮，不自動撐過內容 */
+  /* 100% 高度由外層控制，寬度用 aspect-ratio 算 */
+  height: 100% !important;
 
-    box-sizing: border-box;
+  min-height: 0;
+  box-sizing: border-box;
+  margin: 0 auto !important; /* 水平置中 */
+
+    /* inline‐grid 會根據內容自動撐寬，高度也自動撐開 */
+  display: inline-grid;
+  /* 兩列：第一列是 canvas，第二列是 toolbar */
+  grid-template-rows: auto auto;
+
 }
-
-
 
 #myCanvas {
-    grid-row: 1;
-    width: auto;
-    /* 寬度由 aspect-ratio 推算 */
-    height: 100%;
-    /* 撐滿 wrapper 的高度 */
-    max-height: 100%;
-    /* 超出格線時收窄 */
-    max-width: 100%;
-    /* 防止寬度超出邊界 */
-    aspect-ratio: 1 / 1.5;
-    /* 寬高比 1:2 */
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 10px 10px 0 0;
-    display: block;
-    /* 恢復預設區塊元素 */
-    /* ↓ 關鍵：讓 Grid/Flex 可以把它壓到小於 1000px */
-    min-width: 0;
-    min-height: 0;
+  grid-row: 1;
+  height: 100% !important;
+
+  aspect-ratio: 4 / 6;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px 10px 0 0;
+  display: block;
+  min-width: 0;
+  min-height: 0;
 }
 
-/* 5. 工具列：固定高度、自動換行 */
 .toolbar {
-    grid-row: 2;
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    background: #dcdcd0;
-    border-radius: 0 0 10px 10px;
-    box-sizing: border-box;
+   display: grid;
+  grid-template-rows: auto auto; /* 上／下兩列 */
+  grid-row: 2;
+  width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem   1rem 0.5rem 1rem;
+  background: #dcdcd0;
+  border-radius: 0px;
+  box-sizing: border-box;
 }
+
+/* 第一列：水平排列顏色按鈕 */
+/* CSS */
+.toolbar-row-colors {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+}
+
+/* 第二列：水平排列其它工具 */
+.toolbar-row-tools {
+  width: 100%;             /* 滿版寬度 */
+  display: flex;           /* Flex 排版 */
+  flex-wrap: wrap;         /* 換行 */
+  justify-content: center; /* 水平置中 */
+  align-items: center;     /* 垂直置中（若按鈕高度不同） */
+  gap: 0.5rem;             /* 按鈕間距 */
+  padding: 0.25rem 0;      /* 上下留白，可隨需求微調 */
+  box-sizing: border-box;
+}
+
+
+/* ---------- 顏色區---------- */
+
+/* color-button 塞滿格子且維持 1:1 比例 */
+.toolbar-row-colors .color-button {
+  width: 100%;
+  aspect-ratio: 1.5/0.75;
+  border-radius: 5%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  box-sizing: border-box;
+}
+.toolbar-row-colors .color-button.active {
+  border-color: #30d0ff;
+}
+
+/* 筆刷尺寸下拉按鈕 */
+ixed-button {
+    padding: 0.3rem 0.6rem;
+}
+
+/* 下拉選單內 circle 統一用 .circle */
+.circle {
+  display: inline-block;
+  border-radius: 50%;
+  background: currentColor;
+}
+/* 透過 data-size 或 CSS selector 來設定不同大小 */
+.brush-option .circle {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+.brush-option[data-size="20"] .circle { width: 1rem; height: 1rem; }
+.brush-option[data-size="40"] .circle { width: 1.5rem; height: 1.5rem; }
+.brush-option[data-size="20"] .circle { width: 2rem; height: 2rem; }
+
+
+
+/* ---------- 畫布＋工具列彈性區 ---------- */
+
+
+
 
 /* 6. 下方按鈕區：自動高度 */
 .submit-section {
@@ -124,31 +171,19 @@
     margin: 0.5rem 0 1rem;
 }
 
-
-
-
-
-
 /*兩個案紐*/
 /* 按鈕大小固定或用彈性百分比都可以 */
-.tool-btn {
-    flex: 0 0 auto;
-    width: 2.5rem;
-    height: 2.5rem;
-    border: 3px solid transparent;
-    border-radius: 3px;
-    cursor: pointer;
-}
+
 
 /* 橡皮擦按鈕也套用同樣的外框 */
 .tool-btn.active {
     border-color: #30d0ff;
-
 }
+
 
 /* 下拉 */
 .dropdown-menu {
-    width: 50px;
+    width: 40px;
 }
 
 .dropdown-item {
@@ -157,15 +192,6 @@
     align-items: center;
     justify-content: center;
     padding: 0 !important;
-}
-
-.fixed-button {
-    width: 80px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
 }
 
 
@@ -183,7 +209,6 @@
 
 /* 筆觸大小 */
 .brush-size-selector,
-.color-palette,
 .btn-clear {
     display: flex;
     align-items: center;
@@ -202,30 +227,25 @@
 
 
 
-.color-button {
-    width: 50px;
-    height: 30px;
-    border-radius: 3px;
-    cursor: pointer;
-    border: 3px solid transparent;
-}
-
-.color-button.active {
-    border-color: #30d0ff;
-}
-
-/* 清除按鈕 */
+.dropup,
+ .tool-btn,
 .btn-clear {
-    background: #555555;
-    color: white;
+  flex: 0 0 auto;           /* 不放大、不縮小 */
+  display: inline-flex;     /* 讓內部內容置中 */
+  align-items: center;
+  justify-content: center;
+  height: 2rem;           /* 統一高度，可依需求調整 */
+  padding: 0 0.75rem;       /* 左右內距 */
+  box-sizing: border-box;
+  background: #555555;
+ color: white;
+ text-align: center;
+ border-radius: 5%;
+  border: none; 
+}
+/* 清除按鈕 */
+.btn-clear {  
     border: none;
-    padding: 0.5rem;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 80px;
-    height: 45px;
-    text-align: center;
-    justify-content: center;
 }
 
 .toolbar-divider {
@@ -233,4 +253,5 @@
     height: 30px;
     background-color: #999;
     opacity: 0.4;
+  
 }
