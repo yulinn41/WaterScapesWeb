@@ -70,69 +70,60 @@
 }
 
 
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+/* 加一個偏移變數，方便後面微調 */
+:root {
+  --circle-size:1200px;
+  --reveal-height: 100vh;
+  --circle-offset: -300px;   /* ← 你要往上多移多少就調這個 （正值往上，負值往下） */
 }
 
-
-
 .wave-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 70vh;
-    /* 占據畫面底部 50% 高度 */
-    background-color: rgba(65, 39, 39, 0);
-    z-index: 1;
-    /* 確保在其他元素後面（背景層） */
-    overflow: hidden;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--reveal-height);
+  overflow: hidden;  
+  z-index: 1;
 }
 
 .wave {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .wave::before,
 .wave::after {
-    content: "";
-    background-color: #4b8ba9;
-    opacity: 0.3;
-    border-radius: 40%;
-    position: absolute;
-    left: -40%;
-    bottom: -50%;
-    width: 800px;
-    height: 800px;
-
-    animation-name: spin;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
+  content: "";
+  position: absolute;
+  width: var(--circle-size);
+  height: var(--circle-size);
+  background-color: #c1c1c1;
+  opacity: 0.1;
+  border-radius: 40%;
+  left: 50%;
+  /* 原本是半圓往下 calc(-½直徑)，
+     現在再往上加個偏移量 var(--circle-offset) */
+  bottom: calc(-1 * (var(--circle-size) / 2) + var(--circle-offset));
+  transform-origin: center;
 }
 
 .wave::before {
-    animation: spin 8s linear infinite;
-    transform: translateX(-50%) scale(1);
+  animation: spin-before 20s linear infinite;
 }
 
 .wave::after {
-    animation: spin 12s linear infinite reverse;
-    transform: translateX(-50%) scale(1.1);
-    opacity: 0.3;
+  animation: spin-after 25s linear infinite reverse;
 }
 
-
-.circle {
-    background-color: black;
-    border-radius: 50%;
-    margin: auto;
+@keyframes spin-before {
+  from { transform: translateX(-50%) scale(1) rotate(0deg); }
+  to   { transform: translateX(-50%) scale(1) rotate(360deg); }
 }
+@keyframes spin-after {
+  from { transform: translateX(-50%) scale(1.05) rotate(0deg); }
+  to   { transform: translateX(-50%) scale(1.05) rotate(360deg); }
+}
+
