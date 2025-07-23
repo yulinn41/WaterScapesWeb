@@ -27,7 +27,7 @@ function connectWebSocket() {
         console.log("Unity 連線狀態:", unityConnected);
       } else if (ev.data.startsWith("ImageQueue:")) {
         const n = ev.data.split(":")[1];
-        alert(`圖片已排隊，當前數量：${n}`);
+        //alert(`圖片已排隊，當前數量：${n}`);
       }
     }
   };

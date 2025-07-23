@@ -12,8 +12,10 @@ html, body {
   padding-bottom: env(safe-area-inset-bottom);
   box-sizing: border-box;
       font-family: "Microsoft JhengHei", sans-serif;
-    background-color: #f4f4f4;
+    background-color: #111;
     text-align: center;
+      overflow: hidden;          /* 完全禁止水平與垂直捲動 */
+  overscroll-behavior: none; /* 防止 touch 操作產生「拉彈」效果 */
 }
 
 
@@ -66,7 +68,7 @@ html, body {
 
 .description {
     font-size: 1rem;
-    color: #00D1D8;
+    color: #d80000;
     line-height: 3rem;
     letter-spacing: 0.2em;
     margin-bottom: 2.5rem;
@@ -75,9 +77,9 @@ html, body {
 /* 手機／窄版面時，字距改小、字行也稍微壓縮 */
 @media (max-width: 400px) {
   .description {
-    font-size: 0.9rem;
+    font-size: 0.5rem;
     line-height: 2.4rem;
-    letter-spacing: 0.1em;
+    letter-spacing: 0em;
   }
 }
 .animated-description {
@@ -127,7 +129,7 @@ html, body {
 }
 
 .next-button:hover {
-    background-color: #111;
+    background-color: #5b5b5b;
 }
 
 
