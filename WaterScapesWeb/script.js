@@ -44,14 +44,12 @@ const ctx          = canvas.getContext("2d");
 const colorButtons = document.querySelectorAll(".color-button");
 const brushOptions = document.querySelectorAll(".brush-option");
 const currentCircle= document.getElementById("currentCircle");
-const eraserBtn    = document.getElementById("eraserBtn");   // ← 新增：橡皮擦按鈕
 let undoBtn        = document.getElementById("undoBtn");
 
 let strokes       = [];
 let currentStroke = [];
 let drawing       = false;
-let isEraser      = false;
-let currentColor  = "#6b2f1c";
+let currentColor  = "#a47864";
 
 // 初始畫筆設定
 ctx.lineCap     = "round";
@@ -61,19 +59,14 @@ ctx.lineWidth   = parseInt(brushOptions[0]?.getAttribute("data-size") || 20, 10)
 
 // --- 顏色按鈕點擊：同時關閉橡皮擦 回復筆刷 ---
 colorButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-        // 如果之前是橡皮擦，先切回筆刷
-        if (isEraser) {
-            isEraser = false;
-            eraserBtn.classList.remove("active");
-        }
-
-        // 更新按鈕樣式與畫筆顏色
-        colorButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        currentColor = btn.getAttribute("data-color");
-        ctx.strokeStyle = currentColor;
-    });
+btn.addEventListener("click", () => {
+    // 先清掉所有 active
+    colorButtons.forEach(b => b.classList.remove("active"));
+    // 再把自己設 active
+    btn.classList.add("active");
+    currentColor = btn.dataset.color;
+    ctx.strokeStyle = currentColor;
+  });
 });
 
 // 筆刷大小選擇
@@ -120,7 +113,7 @@ function startDrawing(e) {
     currentStroke = [];
     ctx.beginPath();
     // 根據模式選顏色
-    ctx.strokeStyle = isEraser ? "#ffffffff" : currentColor;
+    ctx.strokeStyle = currentColor;
     const pos = getCanvasCoords(e);
     ctx.moveTo(pos.x, pos.y);
     currentStroke.push({
@@ -164,25 +157,6 @@ function redrawAll() {
 document.getElementById("undoBtn").addEventListener("click", () => {
     strokes.pop();
     redrawAll();
-});
-
-// 切換橡皮擦
-// --- 橡皮擦按鈕：切換模式 ---
-// 切換橡皮擦按鈕：切換模式，同時取消所有顏色按鈕的 active
-eraserBtn.addEventListener("click", () => {
-  isEraser = !isEraser;
-  eraserBtn.classList.toggle("active", isEraser);
-
-  if (isEraser) {
-    // 進入橡皮擦，就取消所有顏色按鈕的 active
-    colorButtons.forEach(b => b.classList.remove("active"));
-  } else {
-    // 象徵「點回畫筆」，可以自動選第一支顏色（或維持目前的 currentColor）
-    // 這邊示範選回第一支：
-    colorButtons[0].classList.add("active");
-    currentColor = colorButtons[0].getAttribute("data-color");
-    ctx.strokeStyle = currentColor;
-  }
 });
 
 // 清除畫布
@@ -243,42 +217,42 @@ document.getElementById("go-to-screen2").addEventListener("click", () => setActi
 
 // 上傳 → 第三頁
 document.getElementById("uploadBtn").addEventListener("click",  async ()  => {
-    // (1) 空畫布檢查
-    if (isCanvasBlank()) {
-        return alert("你還沒有畫圖，請先畫圖再上傳！");
-    }
-    // (2) 連線檢查
-    if (ws.readyState !== WebSocket.OPEN) {
-        return alert("上傳失敗，請檢查伺服器連接！");
-    }
-    if (!unityConnected) {
-        return alert("上傳失敗，遊戲尚未連接！");
-    }
+    // // (1) 空畫布檢查
+    // if (isCanvasBlank()) {
+    //     return alert("你還沒有畫圖，請先畫圖再上傳！");
+    // }
+    // // (2) 連線檢查
+    // if (ws.readyState !== WebSocket.OPEN) {
+    //     return alert("上傳失敗，請檢查伺服器連接！");
+    // }
+    // if (!unityConnected) {
+    //     return alert("上傳失敗，遊戲尚未連接！");
+    // }
 
-    // (3) 建立 128×256 的暫存 canvas
-    const tmp = document.createElement("canvas");
-    tmp.width  = 256;
-    tmp.height = 384;
-    const tctx = tmp.getContext("2d");
-    tctx.fillStyle = "#ffffffff";
-    tctx.fillRect(0, 0, tmp.width, tmp.height);
-    tctx.drawImage(canvas,
-        0, 0, canvas.width, canvas.height,
-        0, 0, tmp.width, tmp.height
-    );
+    // // (3) 建立 128×256 的暫存 canvas
+    // const tmp = document.createElement("canvas");
+    // tmp.width  = 256;
+    // tmp.height = 384;
+    // const tctx = tmp.getContext("2d");
+    // tctx.fillStyle = "#ffffffff";
+    // tctx.fillRect(0, 0, tmp.width, tmp.height);
+    // tctx.drawImage(canvas,
+    //     0, 0, canvas.width, canvas.height,
+    //     0, 0, tmp.width, tmp.height
+    // );
 
-    // (4) 傳送圖片資料
-    const imageData = tmp.toDataURL("image/png");
+    // // (4) 傳送圖片資料
+    // const imageData = tmp.toDataURL("image/png");
     
-// 1. 把 dataURL 轉 Blob → ArrayBuffer
-    const blob        = await (await fetch(imageData)).blob();   // fetch 可把 base64 轉成 Blob
-    const arrayBuffer = await blob.arrayBuffer();
+// // 1. 把 dataURL 轉 Blob → ArrayBuffer
+//     const blob        = await (await fetch(imageData)).blob();   // fetch 可把 base64 轉成 Blob
+//     const arrayBuffer = await blob.arrayBuffer();
 
-    ws.send(arrayBuffer);
+//     ws.send(arrayBuffer);
 
-    // (5) 清空畫布記錄
-    strokes = [];
-    redrawAll();
+//     // (5) 清空畫布記錄
+//     strokes = [];
+//     redrawAll();
 
     // (6) 顯示結果與下載
     resultImg.src = canvas.toDataURL("image/png");

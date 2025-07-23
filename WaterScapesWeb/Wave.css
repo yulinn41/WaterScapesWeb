@@ -1,0 +1,138 @@
+/* 時間軸同理 */
+.timeline {
+    display: none;
+}
+
+.timeline.active {
+    display: flex;
+}
+
+
+/* --- 時間線與圈圈 --- */
+.timeline {
+    position: fixed;
+    top: env(safe-area-inset-top, 10px);
+    left: 0;
+    width: 100%;
+    height: 60px;
+    z-index: 1000;
+    background: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+/* 波浪線條本體 */
+.timeline-wave {
+    width: 90%;
+    height: 30px;
+}
+
+/* 圓形節點 */
+.timeline-dots {
+    position: absolute;
+    top: 10px;
+    /* 根據波形調整 */
+    left: 5%;
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+}
+
+
+
+.timeline-dots .dot {
+    /* 先保留原本的相對定位讓你還能用 top/left 微調整條件 */
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #d4d4d4;
+    position: relative;
+    /* 加上這兩行 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timeline-dots .dot.active::before {
+    content: "";
+    /* 取消所有定位，改用 flex 置中 */
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+
+    background-color: rgb(13, 204, 221);
+    border-radius: 50%;
+}
+
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+.wave-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70vh;
+    /* 占據畫面底部 50% 高度 */
+    background-color: rgba(65, 39, 39, 0);
+    z-index: 1;
+    /* 確保在其他元素後面（背景層） */
+    overflow: hidden;
+}
+
+.wave {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.wave::before,
+.wave::after {
+    content: "";
+    background-color: #4b8ba9;
+    opacity: 0.3;
+    border-radius: 40%;
+    position: absolute;
+    left: -40%;
+    bottom: -50%;
+    width: 800px;
+    height: 800px;
+
+    animation-name: spin;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+.wave::before {
+    animation: spin 8s linear infinite;
+    transform: translateX(-50%) scale(1);
+}
+
+.wave::after {
+    animation: spin 12s linear infinite reverse;
+    transform: translateX(-50%) scale(1.1);
+    opacity: 0.3;
+}
+
+
+.circle {
+    background-color: black;
+    border-radius: 50%;
+    margin: auto;
+}
