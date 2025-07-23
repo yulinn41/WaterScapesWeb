@@ -217,42 +217,40 @@ document.getElementById("go-to-screen2").addEventListener("click", () => setActi
 
 // 上傳 → 第三頁
 document.getElementById("uploadBtn").addEventListener("click",  async ()  => {
-    // // (1) 空畫布檢查
-    // if (isCanvasBlank()) {
-    //     return alert("你還沒有畫圖，請先畫圖再上傳！");
-    // }
-    // // (2) 連線檢查
-    // if (ws.readyState !== WebSocket.OPEN) {
-    //     return alert("上傳失敗，請檢查伺服器連接！");
-    // }
-    // if (!unityConnected) {
-    //     return alert("上傳失敗，遊戲尚未連接！");
-    // }
+    // (1) 空畫布檢查
+    if (isCanvasBlank()) {
+        return alert("你還沒有畫圖，請先畫圖再上傳！");
+    }
+    // (2) 連線檢查
+    if (ws.readyState !== WebSocket.OPEN) {
+        return alert("上傳失敗，請檢查伺服器連接！");
+    }
+    if (!unityConnected) {
+        return alert("上傳失敗，遊戲尚未連接！");
+    }
 
-    // // (3) 建立 128×256 的暫存 canvas
-    // const tmp = document.createElement("canvas");
-    // tmp.width  = 256;
-    // tmp.height = 384;
-    // const tctx = tmp.getContext("2d");
-    // tctx.fillStyle = "#ffffffff";
-    // tctx.fillRect(0, 0, tmp.width, tmp.height);
-    // tctx.drawImage(canvas,
-    //     0, 0, canvas.width, canvas.height,
-    //     0, 0, tmp.width, tmp.height
-    // );
+    // (3) 建立 128×256 的暫存 canvas
+    const tmp = document.createElement("canvas");
+    tmp.width  = 256;
+    tmp.height = 384;
+    const tctx = tmp.getContext("2d");
+    tctx.fillStyle = "#ffffffff";
+    tctx.fillRect(0, 0, tmp.width, tmp.height);
+    tctx.drawImage(canvas,
+        0, 0, canvas.width, canvas.height,
+        0, 0, tmp.width, tmp.height
+    );
 
-    // // (4) 傳送圖片資料
-    // const imageData = tmp.toDataURL("image/png");
+    // (4) 傳送圖片資料
+    const imageData = tmp.toDataURL("image/png");
     
-// // 1. 把 dataURL 轉 Blob → ArrayBuffer
-//     const blob        = await (await fetch(imageData)).blob();   // fetch 可把 base64 轉成 Blob
-//     const arrayBuffer = await blob.arrayBuffer();
+// 1. 把 dataURL 轉 Blob → ArrayBuffer
+    const blob        = await (await fetch(imageData)).blob();   // fetch 可把 base64 轉成 Blob
+    const arrayBuffer = await blob.arrayBuffer();
 
-//     ws.send(arrayBuffer);
+    ws.send(arrayBuffer);
 
-//     // (5) 清空畫布記錄
-//     strokes = [];
-//     redrawAll();
+
 
     // (6) 顯示結果與下載
     resultImg.src = canvas.toDataURL("image/png");
