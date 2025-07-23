@@ -53,9 +53,9 @@
   min-height: 0;
   margin: 0 auto !important;
   box-sizing: border-box;
-
+ width: min(70vw, 500px);    /* 手機 90% 螢幕寬／電腦最大 600px */
   display: grid;
-grid-template-rows: auto auto;
+  grid-template-rows: auto auto;
   align-content: center;
   justify-items: center;
 }
@@ -65,17 +65,17 @@ grid-template-rows: auto auto;
 #myCanvas {
   grid-row: 1;
   align-self: end;
-
+  width: auto;
   height: auto;
-
+  max-width: 100%;
+  max-height: 100%;
   aspect-ratio: 2/3;
   background: white;
   border: 1px solid #ccc;
   border-radius: 2px 2px 0 0;
   display: block;
-  width: 100%;
-  max-width: 600px;      /* 依專案需求調整 */
-
+  min-width: 0;
+  min-height: 0;
 }
 
 /* ---------- 工具列 ---------- */
@@ -91,7 +91,6 @@ grid-template-rows: auto auto;
   box-sizing: border-box;
   flex-wrap: wrap;
   justify-content: center;
-  max-width: 600px;      /* 跟 #myCanvas 同 max-width */
  
 }
 
