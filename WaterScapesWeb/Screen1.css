@@ -28,8 +28,7 @@ html, body {
     /* 確保元素不可點擊，防止幽靈點擊 */
     pointer-events: none !important;
     /* 讓元素在佈局中保持其原始尺寸，但不可見 */
-    height: 0 !important; /* 或者 min-height: 0; max-height: 0; */
-    overflow: hidden !important; /* 隱藏超出內容 */
+
   }
 }
 
