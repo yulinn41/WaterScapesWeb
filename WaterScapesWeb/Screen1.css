@@ -22,7 +22,7 @@ html, body {
 
 /* 當偵測到橫向，隱藏所有 .screen，並顯示提示 */
 @media screen and (orientation: landscape) {
-  .screen { display: none !important; }
+  .screen .active{ display: none !important; }
 }
 
 
