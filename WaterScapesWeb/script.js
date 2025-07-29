@@ -186,8 +186,8 @@ function resizeCanvasAndRedraw() {
             // Based on canvas aspect-ratio: 2/3 (height = width * 3/2)
             const calculatedHeight = wrapperWidth * (3 / 2);
 
-            canvas.width = wrapperWidth;
-            canvas.height = calculatedHeight;
+          //  canvas.width = wrapperWidth;
+           // canvas.height = calculatedHeight;
 
             redrawAll();
         });

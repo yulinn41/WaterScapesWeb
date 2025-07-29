@@ -28,6 +28,9 @@ html, body {
     /* 確保元素不可點擊，防止幽靈點擊 */
     pointer-events: none !important;
     /* 讓元素在佈局中保持其原始尺寸，但不可見 */
+    height: 0 !important; /* 確保隱藏時不佔用高度 */
+    overflow: hidden !important;
+    transition: none !important; /* 避免隱藏時有過渡效果 *
 
   }
 }
