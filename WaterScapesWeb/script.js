@@ -182,9 +182,9 @@ function resizeCanvasAndRedraw() {
     const canvasToolbarWrapper = document.querySelector('.canvas-toolbar-wrapper');
     if (canvasToolbarWrapper && canvas) {
         requestAnimationFrame(() => {
-            const wrapperWidth = canvasToolbarWrapper.clientWidth;
+            //const wrapperWidth = canvasToolbarWrapper.clientWidth;
             // Based on canvas aspect-ratio: 2/3 (height = width * 3/2)
-            const calculatedHeight = wrapperWidth * (3 / 2);
+            //const calculatedHeight = wrapperWidth * (3 / 2);
 
           //  canvas.width = wrapperWidth;
            // canvas.height = calculatedHeight;
