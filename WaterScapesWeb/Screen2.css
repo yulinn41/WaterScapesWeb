@@ -1,8 +1,5 @@
 /* ---------- 第二畫面整體 ---------- */
-#screen2 {
-  /* 預設隱藏，待 .active 時顯示 */
-  display: none;
-}
+
 #screen2.active {
   display: grid;
 }

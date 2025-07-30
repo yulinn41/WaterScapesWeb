@@ -178,40 +178,50 @@ const screens = {
 };
 
 // **NEW: Function to adjust Canvas size and redraw**
-function resizeCanvasAndRedraw() {
-    const canvasToolbarWrapper = document.querySelector('.canvas-toolbar-wrapper');
-    if (canvasToolbarWrapper && canvas) {
-        requestAnimationFrame(() => {
-            //const wrapperWidth = canvasToolbarWrapper.clientWidth;
-            // Based on canvas aspect-ratio: 2/3 (height = width * 3/2)
-            //const calculatedHeight = wrapperWidth * (3 / 2);
-
-          //  canvas.width = wrapperWidth;
-           // canvas.height = calculatedHeight;
-
-            redrawAll();
-        });
-    }
+function refreshCanvasDisplay() {
+    redrawAll();
 }
 
 // Switch screen: Add/remove "active" class
+// ... (script.js 的其餘部分不變) ...
+
+// **修正後的 setActiveScreen 函數**
 function setActiveScreen(n) {
   // Hide all screens
   Object.values(screens).forEach(s => {
     s.classList.remove("active");
-    // **NEW: Clear any inline hidden styles previously set by orientation change handler**
+    s.style.display = 'none'; // 確保非活躍畫面被隱藏
+
+    // 清除可能由 orientation change 設置的 inline style
     s.style.visibility = '';
     s.style.opacity = '';
     s.style.pointerEvents = '';
     s.style.height = '';
     s.style.overflow = '';
   });
+
   // Show the current one
   if (screens[n]) {
     screens[n].classList.add("active");
-    // **NEW: If it's screen2, trigger canvas size adjustment and redraw**
+    screens[n].style.display = ''; // 清除 inline display，讓 CSS 規則生效
+
+    // **新增：如果活躍畫面是 screen1，強制重啟 description 的動畫**
+    if (n === 1) {
+      const descriptionElement = screens[n].querySelector('.animated-description');
+      if (descriptionElement) {
+        // 移除動畫類別
+        descriptionElement.classList.remove('animated-description');
+        // 強制瀏覽器重排 (reflow) - 這是確保動畫重播的關鍵
+        // 透過讀取元素的 offsetWidth 屬性來觸發重排
+        void descriptionElement.offsetWidth; // 注意 `void` 操作符，它確保這行語句只執行副作用，不返回任何值
+        // 重新添加動畫類別
+        descriptionElement.classList.add('animated-description');
+      }
+    }
+    
+    // If it's screen2, trigger canvas adjustment and redraw
     if (n === 2) {
-      resizeCanvasAndRedraw();
+      refreshCanvasDisplay();
     }
   }
 
@@ -235,38 +245,52 @@ function setActiveScreen(n) {
   }
 }
 
-// **NEW: Function to handle orientation change**
+
+// **修正後的 handleOrientationChange 函數**
 function handleOrientationChange() {
     const isLandscape = window.matchMedia("(orientation: landscape)").matches;
-    const orientationMessage = document.getElementById('orientation-message'); // Assuming you have this message element
+    const orientationMessage = document.getElementById('orientation-message');
 
     Object.values(screens).forEach(screenElement => {
         if (isLandscape) {
-            // Landscape mode: apply hidden styles
             screenElement.style.visibility = 'hidden';
             screenElement.style.opacity = '0';
             screenElement.style.pointerEvents = 'none';
             screenElement.style.height = '0';
             screenElement.style.overflow = 'hidden';
+            screenElement.style.display = 'none'; // 新增：橫向時強制隱藏
         } else {
-            // Portrait mode: clear hidden styles, let CSS rules take effect
             screenElement.style.visibility = '';
             screenElement.style.opacity = '';
             screenElement.style.pointerEvents = '';
             screenElement.style.height = '';
             screenElement.style.overflow = '';
+            // 這裡不直接設置 display = '' 或 flex/grid
+            // 而是讓 setActiveScreen 或 CSS 的 .active 規則來控制顯示
         }
     });
 
-    // Handle the message (if any)
     if (orientationMessage) {
         orientationMessage.style.display = isLandscape ? 'flex' : 'none';
     }
 
-    // If the active screen is screen2 and switching back to portrait, resize canvas
+    // 如果當前活躍畫面是 screen2，並且切換回直向模式，重新繪製 canvas
     const activeScreen = document.querySelector('.screen.active');
     if (!isLandscape && activeScreen && activeScreen.id === 'screen2') {
-        resizeCanvasAndRedraw();
+        // 在這裡觸發重繪，確保畫布內容在顯示時可見
+        refreshCanvasDisplay(); // 使用新的函數名稱
+    }
+
+    // **新增：在每次方向切換後，確保當前活躍畫面狀態正確**
+    // 這一步可能需要一點點延遲，以確保瀏覽器完成佈局重繪
+    const currentActiveScreenId = activeScreen ? activeScreen.id : null;
+    const currentActiveScreenNumber = currentActiveScreenId ? parseInt(currentActiveScreenId.replace('screen', '')) : null;
+
+    // 如果有活躍畫面，在方向改變後重新設置一次活躍畫面，強制佈局和顯示更新
+    if (currentActiveScreenNumber !== null) {
+        setTimeout(() => {
+            setActiveScreen(currentActiveScreenNumber);
+        }, 50); // 這裡給予一個小小的延遲，讓瀏覽器有時間完成佈局計算
     }
 }
 
