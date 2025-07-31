@@ -132,7 +132,7 @@
   grid-row: 3;
   display: flex;
   justify-content: center;
-  margin: 0.5rem 0 1rem;
+  margin: 0.5rem 0 5rem;
 }
 .tool-btn.active {
   border-color: #00D1D8;
